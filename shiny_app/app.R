@@ -12,7 +12,7 @@ library(shinythemes)
 
 # Load in RDS files
 
-tntell <- read.csv("./textntell.csv", stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
+tntell <- read.csv("../data_prep/textntell.csv", stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
 comment <- as.character(tntell$Comment)
 doc <- Corpus(VectorSource(comment))
 doc_clean <- doc %>%
@@ -28,9 +28,37 @@ matrix <- as.matrix(dtm)
 wordd <- sort(rowSums(matrix), decreasing = T)
 df <- data.frame(word = names(wordd), freq=wordd)
 
-# Define UI for application that draws a histogram
+
 ui <- navbarPage(theme = shinytheme("united"),
                  "HUDS Feedback",
+                 
+                 ## About ##
+                 
+                 tabPanel("About",
+                          column(7,
+
+                          h1("Background"),
+                          p("Howdy!"),
+                          p("Hi again"),
+                          h1("Data"),
+                          h1("About Me"),
+                          p("I'm Sophie Webster, and I'm currently a junior at Harvard College studying 
+                            Integrative Biology with a secondary in Earth & Planetary Sciences. When I'm not click-clacking away in RStudio, you 
+                            can find me singing a cappella with the ", a("Radcliffe Pitches", href = "https://pitches.org"), ", writing 
+                          comedy for ", a("Satire V", href = "https://satirev.org"), ", jogging slowly around the Charles River, or inhabiting Harvard's maker space."),
+                                  
+                          p("Thanks for stopping by! You can reach me at ",
+                            a("sophiewebster@college.harvard.edu",
+                              href = "mailto: sophiewebster@college.harvard.edu"),
+                            "or on ",
+                            a("LinkedIn",
+                              href = "https://www.linkedin.com/in/sophie-webster-651b03171/"),".")
+                          ),
+                          column(2,
+                              imageOutput("huds", height = "50%", width = "50%"),
+                              imageOutput("food", height = "50%", width = "50%"))
+                              ),
+                          
                  fluidPage(
                      
                      # Application title
@@ -45,6 +73,19 @@ ui <- navbarPage(theme = shinytheme("united"),
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+    
+    # Images for the About tab
+    output$huds <- renderImage({
+        list(
+            src = './images/huds.png',
+            contentType='image/png'
+        )}, deleteFile = F)
+    
+    output$food <- renderImage({
+        list(
+            src = './images/food.jpg',
+            contentType='image/jpg'
+        )}, deleteFile = F)
     
     output$wordPlot <- renderWordcloud2({
         
