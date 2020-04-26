@@ -1,2 +1,2 @@
-# Harvard University Dining Services Feedback Analysis
-Final project for Gov 1005: Data
+# Harvard University Dining Services (HUDS) Feedback Analysis
+Final project for Gov 1005: Data analyzing student dining hall feedback.
