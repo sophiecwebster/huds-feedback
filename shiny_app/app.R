@@ -38,25 +38,31 @@ ui <- navbarPage(theme = shinytheme("united"),
                           column(7,
 
                           h1("Background"),
-                          p("Howdy!"),
-                          p("Hi again"),
+                          p("Harvard University Dining Services (colloquially known as HUDS) manages twelve dining halls in the undergraduate student houses, the first-year dining hall (Annenberg), one kosher dining hall (Harvard Hillel), and two graduate dining halls for graduate students. "),
+                          p("They serve breakfast, lunch, and dinner to hungry students every day, feeding a population of over 7000 daily. The rotating menu offers a variety of seasonal selections, healthy options, and comforting favorites — just ask any undergraduate, and they'll tell you their HUDS pick."),
+                          p("In 2017, HUDS rolled out a program initially coined ", em("Text-and-Tell"), ", in which students can send a text message to the manager of their house's dining hall. In an ", a("article", href="https://www.thecrimson.com/article/2019/3/7/huds-texting/"), "in ", em("The Crimson"), "'s", em("Fifteen Minutes Magazine,"), "HUDS Managing Director David P. Davidson
+                            estimated that nearly 98% of messages are positive, while the other 2% are requests for specific dishes.
+                            Students are known to send humorous feedback, and HUDS managers are known for their even wittier replies. As a huge HUDS fan, I wanted to better understand how this feedback tool was used by students through visualization and statistical analysis."),
                           h1("Data"),
+                          p("This data was kindly given to me by Crista Martin, Director for Strategic Initiatives & Communications at HUDS. While,
+                            out of courtesy to her and HUDS, I will not publicize the data on this site, you can contact Crista if you have 
+                            any questions or curiosities."),
                           h1("About Me"),
-                          p("I'm Sophie Webster, and I'm currently a junior at Harvard College studying 
+                          p("My name is Sophie Webster, and I'm an avid texter of HUDS. I'm also a current junior at Harvard College studying 
                             Integrative Biology with a secondary in Earth & Planetary Sciences. When I'm not click-clacking away in RStudio, you 
-                            can find me singing a cappella with the ", a("Radcliffe Pitches", href = "https://pitches.org"), ", writing 
-                          comedy for ", a("Satire V", href = "https://satirev.org"), ", jogging slowly around the Charles River, or inhabiting Harvard's maker space."),
+                            can find me singing jazz a cappella with the ", a("Radcliffe Pitches,", href = "https://pitches.org"), "writing 
+                          comedy for ", a("Satire V,", href = "https://satirev.org"), "jogging slowly around the Charles River, or inhabiting Harvard's maker spaces."),
                                   
-                          p("Thanks for stopping by! You can reach me at ",
+                          p("Thanks for stopping by! Feel free to say hi at ",
                             a("sophiewebster@college.harvard.edu",
                               href = "mailto: sophiewebster@college.harvard.edu"),
                             "or on ",
-                            a("LinkedIn",
-                              href = "https://www.linkedin.com/in/sophie-webster-651b03171/"),".")
+                            a("LinkedIn.",
+                              href = "https://www.linkedin.com/in/sophie-webster-651b03171/"))
                           ),
-                          column(2,
-                              imageOutput("huds", height = "50%", width = "50%"),
-                              imageOutput("food", height = "50%", width = "50%"))
+                          column(1,
+                              imageOutput("huds", height = "100%", width = "100%"),
+                              imageOutput("food", height = "100%", width = "100%"))
                               ),
                           
                  fluidPage(
@@ -74,17 +80,22 @@ ui <- navbarPage(theme = shinytheme("united"),
 # Define server logic required to draw a histogram
 server <- function(input, output) {
     
-    # Images for the About tab
+    # Adding two images for the About tab
+    
     output$huds <- renderImage({
         list(
             src = './images/huds.png',
-            contentType='image/png'
+            contentType='image/png',
+            width = 400,
+            height = 262
         )}, deleteFile = F)
     
     output$food <- renderImage({
         list(
             src = './images/food.jpg',
-            contentType='image/jpg'
+            contentType='image/jpg',
+            width = 400,
+            height = 262
         )}, deleteFile = F)
     
     output$wordPlot <- renderWordcloud2({
