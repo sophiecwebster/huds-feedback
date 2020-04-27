@@ -37,7 +37,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                           p("My name is Sophie Webster, and I'm an avid texter of HUDS. I'm also a current junior at Harvard College studying 
                             Integrative Biology with a secondary in Earth & Planetary Sciences. This is my final project for ", a("Gov 1005,", href="https://www.davidkane.info/files/gov_1005_spring_2020.html"), "a data science course taught in R. When I'm not click-clacking away in RStudio, you 
                             can find me singing jazz a cappella with the ", a("Radcliffe Pitches,", href = "https://pitches.org"), "writing 
-                          comedy for ", a("Satire V,", href = "https://satirev.org"), "jogging slowly around the Charles River, or inhabiting Harvard's maker spaces."),
+                          comedy for ", a("Satire V, ", href = "https://satirev.org"), "  jogging slowly around the Charles River, or inhabiting Harvard's maker spaces."),
                                   
                           p("Thanks for stopping by! Feel free to say hi at ",
                             a("sophiewebster@college.harvard.edu",
