@@ -9,8 +9,9 @@ library(lubridate)
 library(sf)
 library(ggmap)
 library(readxl)
+library(sentimentr)
 
-tntell <- read.csv("./huds-feedback/textntell.csv", stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
+tntell <- read.csv("./textntell.csv", stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
 
 tntell$arranged <- tntell$Location %>% fct_relevel("Annenberg", "Lowell", "Dunster", "Cabot", "Quincy", "Mather", "Pforzheimer", "Winthrop", "Currier", "Leverett", "Eliot", "Adams", "Hillel", "Kirkland", "FlyBy", "Dudley")
 
@@ -54,46 +55,11 @@ tntell <- tntell %>%
     hour(time) %in% c(1:6, 21:24) ~ "brain break"
   ))
 
+# Using sentimentr to give each comment a sentiment 'score'
+# Positive values denote... positivity! Negative values denote negativity.
 
-US <- map_data(map = "world", region = "US")
-saveRDS(US, '~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/US.RDS')
-
-#US <- map_data("state")
-# library(albersusa)
-# US <- usa_composite()
-
-#world_points <- cbind(world, st_coordinates(st_centroid(world$geometry)))
-
-state_ids <- read_excel('./huds-feedback/data_prep/state-ids.xlsx')
-
-state_ids$Location <- state_ids$name
-
-locations <- left_join(located, state_ids, by = "Location")
-
-revised_loc <- locations %>%
-  group_by(Location) %>%
-  count()
-
-to_plot <- rename(to_plot, "Messages" = `Messages Sent`)
-
-to_plot <- left_join(revised_loc, state_ids, by = "Location")
-
-to_plot <- to_plot[1:4]
-
-saveRDS(to_plot, "~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/map.RDS")
-
-ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
-  coord_map() + geom_point(data = to_plot, color="#f15b29", aes(x = longitude, y = latitude, size = Messages)) +
-  xlim(-180, -50) + theme_classic() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
-                                            axis.text.y=element_blank(),axis.ticks=element_blank(),
-                                            axis.title.x=element_blank(),
-                                            axis.title.y=element_blank(),
-                                            panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-                                            panel.grid.minor=element_blank(),plot.background=element_blank())
-
-
-
-
+phrases <- get_sentences(tntell$Comment)
+sentiments <- sentiment_by(phrases)
 
 
 
