@@ -61,10 +61,11 @@ ui <- navbarPage(theme = shinytheme("united"),
                           fluidPage(
                               
                               
-                              titlePanel("Text-and-Tell Word Cloud"),
-                              
-                              
-                              mainPanel(wordcloud2Output("wordPlot"), class = 'rightAlign'
+                              h2("Text-and-Tell Word Cloud", align="left"),
+                              h4("Hover over a word to see how many times it occurs across all messages!", align="left"),
+                              br(),
+                              column(12, align="center",
+                              wordcloud2Output("wordPlot"), class = 'rightAlign'
                               )))
 )
 
