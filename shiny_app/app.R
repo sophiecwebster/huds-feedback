@@ -45,7 +45,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                             Students are known to send humorous feedback, and HUDS managers are known for their even wittier replies. As a huge HUDS fan, I wanted to better understand how this feedback tool was used by students through visualization and statistical analysis."),
                           h1("Data"),
                           p("This data was kindly given to me by Crista Martin, Director for Strategic Initiatives & Communications at HUDS. While,
-                            out of courtesy to her and HUDS, I will not publicize the data on this site, you can contact Crista if you have 
+                            as a courtesy to her and HUDS, I will not publicize the data on this site, you can contact Crista if you have 
                             any questions or curiosities."),
                           h1("About Me"),
                           p("My name is Sophie Webster, and I'm an avid texter of HUDS. I'm also a current junior at Harvard College studying 
