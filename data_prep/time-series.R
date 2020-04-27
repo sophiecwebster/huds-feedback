@@ -30,10 +30,10 @@ tntell <- tntell %>%
     hour(time) %in% c(1:6, 21:24) ~ "brain break"
   ))
 
-# Making heat plot
+# Making heat plot; this will be an interactive plot by house
 
 heat <- tntell %>%
-  group_by(month, day, hour, year) %>%
+  group_by(month, day, hour, year, arranged) %>%
   count()
 
 ggplot(heat, aes(day,hour, fill=n))+
@@ -46,11 +46,16 @@ ggplot(heat, aes(day,hour, fill=n))+
   theme(legend.position = "bottom") +
   labs(
     x = "Day",
-    y = "Hour",
-    title = "Message Density Across 2019"
+    y = "Hour"
   )
 
-saveRDS(object = heat, file = "./shiny_app/rds_files/times.RDS")
-  
+# For UI inputs
 
+house_names <- c(unique(tntell$Location))
+
+saveRDS(object = heat, file = "./shiny_app/rds_files/times.RDS")
+saveRDS(object = house_names, file = "./shiny_app/rds_files/house_names.RDS")
+  
+tntell %>%
+  ggplot(aes(time, fill = arranged, alpha = 0.1)) + geom_density()
 
