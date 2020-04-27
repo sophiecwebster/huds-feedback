@@ -12,21 +12,7 @@ library(shinythemes)
 
 # Load in RDS files
 
-tntell <- read.csv("../data_prep/textntell.csv", stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
-comment <- as.character(tntell$Comment)
-doc <- Corpus(VectorSource(comment))
-doc_clean <- doc %>%
-    tm_map(removeNumbers) %>%
-    tm_map(removePunctuation) %>%
-    tm_map(stripWhitespace)
-
-doc2 <- tm_map(doc_clean, content_transformer(tolower))
-final_doc <- tm_map(doc2, removeWords, stopwords("english"))
-
-dtm <- TermDocumentMatrix(final_doc)
-matrix <- as.matrix(dtm)
-wordd <- sort(rowSums(matrix), decreasing = T)
-df <- data.frame(word = names(wordd), freq=wordd)
+word_cloud <- readRDS("./rds_files/word-cloud.RDS")
 
 
 ui <- navbarPage(theme = shinytheme("united"),
@@ -44,7 +30,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                             estimated that nearly 98% of messages are positive, while the other 2% are requests for specific dishes.
                             Students are known to send humorous feedback, and HUDS managers are known for their even wittier replies. As a huge HUDS fan, I wanted to better understand how this feedback tool is used by students through visualization and statistical analysis."),
                           h1("Data"),
-                          p("This data was kindly given to me by Crista Martin, Director for Strategic Initiatives & Communications at HUDS. While,
+                          p("This project analyzes the almost 2500 text messages sent by students during the fall and spring semesters of 2019. This data was kindly given to me by Crista Martin, Director for Strategic Initiatives & Communications at HUDS. While,
                             as a courtesy to her and HUDS, I will not publicize the data on this site, you can contact Crista if you have 
                             any questions or curiosities."),
                           h1("About Me"),
@@ -68,20 +54,18 @@ ui <- navbarPage(theme = shinytheme("united"),
                               br(),
                               imageOutput("food", height = "100%", width = "100%"))
                               ),
-                 tabPanel("By Location",
+                 tabPanel("By Location"),
                           
-                 fluidPage(
-                     
-                     
-                     titlePanel("Text-and-Tell Word Cloud"),
-                     
-                   
-                     mainPanel(
-                         wordcloud2Output("wordPlot")
-                     )
-                 )),
                  tabPanel("Sentiment Analysis"),
-                 tabPanel("Browse")
+                 tabPanel("Browse",
+                          fluidPage(
+                              
+                              
+                              titlePanel("Text-and-Tell Word Cloud"),
+                              
+                              
+                              mainPanel(wordcloud2Output("wordPlot"), class = 'rightAlign'
+                              )))
 )
 
 # Define server logic required to draw a histogram
@@ -107,7 +91,7 @@ server <- function(input, output) {
     
     output$wordPlot <- renderWordcloud2({
         
-        wordcloud2(df, size = 1.3, color = rep_len(c("#f15b29", "#2bb673", "#BDD2FF", "#f3b204", "#F59187"), nrow(demoFreq)))
+        wordcloud2(word_cloud, size = 1.3, color = rep_len(c("#f15b29", "#2bb673", "#BDD2FF", "#f3b204", "#F59187"), nrow(demoFreq)))
         
     })
 }
