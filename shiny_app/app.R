@@ -13,6 +13,7 @@ library(viridis)
 library(sf)
 library(ggmap)
 library(readxl)
+library(shinycustomloader)
 
 # Load in RDS files
 
@@ -21,6 +22,10 @@ heat <- readRDS("./rds_files/times.RDS")
 house_names <- readRDS("./rds_files/house_names.RDS")
 US <- readRDS("./rds_files/US.RDS")
 map_1 <- readRDS("./rds_files/map.RDS")
+comments <- readRDS("./rds_files/comments.RDS")
+top_four <- readRDS("./rds_files/top-four.RDS")
+
+#marquee_list <- list(marquee(comments))
 
 
 ui <- navbarPage(theme = shinytheme("united"),
@@ -52,10 +57,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                               href = "mailto: sophiewebster@college.harvard.edu"),
                             "or on ",
                             a("LinkedIn.",
-                              href = "https://www.linkedin.com/in/sophie-webster-651b03171/")),
-                          h2("Citations"),
-                          p("D. Kahle and H. Wickham. ggmap: Spatial Visualization with ggplot2. The R Journal, 5(1),
-  144-161. URL http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf")
+                              href = "https://www.linkedin.com/in/sophie-webster-651b03171/"))
                           ),
                           
                           column(1,
@@ -91,21 +93,34 @@ ui <- navbarPage(theme = shinytheme("united"),
                               titlePanel("Messages By Student Home State"),
                               h4("Determined From Area Code"),
                               column(12,
-                                     mainPanel(width = 12, imageOutput("map")))
-                          )
+                                     mainPanel(width = 12, imageOutput("map")))),
+                              
+                          fluidPage(
+                            column(7, align="left",
+                            p("While it sure looks like there are a much higher density of die-hard HUDS texters hailing from the Northeast and California, it's
+                               important to remember that these numbers do not into take account relative abundance of these states' residents. Below is a plot
+                               for the top four represented states, adjusted per capita."),
+                            p("Massachusetts nonetheless looks awfully high; however, most international students acquire a 617 area code upon arriving at school, so they too are lumped in with 
+                               MA residents."),
+                            br()
+                          )),
+                          fluidPage(
+                              column(7,
+                                     plotOutput("top_four")))
+                          
                           ),         
                  tabPanel("Sentiment Analysis"),
                  tabPanel("Browse Messages",
                           fluidPage(
-                              
-                              
+                              # Trying to get a marquee going; I'll figure this out later.
+                              # mainPanel(renderCSS(type="text", loader=marquee_list)),
                               h2("Text-and-Tell Word Cloud", align="left"),
                               h4("Hover over a word to see how many times it occurs across all messages!", align="left"),
                               br(),
                               column(12, align="center",
                               wordcloud2Output("wordPlot"), class = 'rightAlign'
-                              )))
-)
+                              ))))
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -153,9 +168,19 @@ server <- function(input, output) {
       list(
         src = "./images/map.jpg",
         contentType='image/jpg',
-        width = 1000,
-        height = 602
+        width = 700,
+        height = 420
       )}, deleteFile = F)
+    
+    output$top_four <- renderPlot({
+      top_four$n <- top_four$n / c(944, 708, 944, 944)
+      top_four %>%
+        ggplot(aes(Location, n)) + 
+        geom_col(fill = "#2bb673") + 
+        labs(x = "Home State", y = "HUDS Messages Per Capita", title = "Messages Per Capita By Student Home State", subtitle = "For Top Four States") +
+        theme_minimal()
+      
+    })
 
     
     # For some reason, this plot would not render properly/threw an error every time :'(
@@ -173,7 +198,12 @@ server <- function(input, output) {
     #                                                   panel.grid.minor=element_blank(),plot.background=element_blank())
     # })
     
-    output$wordPlot <- renderWordcloud2({
+    # output$scroll <- renderCSS({
+    #   marquee(comments, behavior = "scroll", direction = "left",
+    #           scrollamount = 6, width = "100%")
+    # })
+    
+     output$wordPlot <- renderWordcloud2({
         
         wordcloud2(word_cloud, size = 1.3, color = rep_len(c("#f15b29", "#2bb673", "#BDD2FF", "#f3b204", "#F59187"), nrow(demoFreq)))
         
