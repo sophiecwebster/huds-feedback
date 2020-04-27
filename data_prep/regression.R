@@ -10,6 +10,8 @@ library(sf)
 library(ggmap)
 library(readxl)
 library(sentimentr)
+library(tidyr)
+library(broom)
 
 tntell <- read.csv("./textntell.csv", stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
 
@@ -43,7 +45,8 @@ tntell$time <- ymd_hms(tntell$Start)
 tntell <- tntell %>% mutate(year = year(time),
                             month = month(time, label=TRUE),
                             day = day(time),
-                            hour = hour(time))
+                            hour = hour(time),
+                            weekday = wday(time))
 
 # Classifying the messages as breakfast, lunch, and dinner
 
@@ -61,9 +64,19 @@ tntell <- tntell %>%
 phrases <- get_sentences(tntell$Comment)
 sentiments <- sentiment_by(phrases)
 
+full <- cbind(tntell, sentiments)
 
+hour_model <- lm(ave_sentiment ~ hour, data = full) %>%
+  tidy(conf.int=T)
+month_model <- lm(ave_sentiment ~ month, data = full) %>%
+  tidy(conf.int=T)
+weekday_model <- lm(ave_sentiment ~ weekday, data = full) %>%
+  tidy(conf.int=T)
 
+saveRDS(full, '~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/full.RDS')
 
+ggplot(aes(month, y = ave_sentiment)) + geom_point() +
+  geom_smooth(se = F, method = "lm")
 
-
+new <- full %>% select(c("month", "ave_sentiment"))
 
