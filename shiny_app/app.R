@@ -91,7 +91,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                               titlePanel("Messages By Student Home State"),
                               h4("Determined From Area Code"),
                               column(12,
-                                     mainPanel(width = 12, plotOutput("map")))
+                                     mainPanel(width = 12, imageOutput("map")))
                           )
                           ),         
                  tabPanel("Sentiment Analysis"),
@@ -149,16 +149,29 @@ server <- function(input, output) {
             )
     })
     
-    output$map <- renderPlot({
-        ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
-            coord_map() + geom_point(data = map_1, color="#f15b29", aes(x = longitude, y = latitude, size = Messages)) +
-            xlim(-180, -50) + theme_classic() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
-                                                      axis.text.y=element_blank(),axis.ticks=element_blank(),
-                                                      axis.title.x=element_blank(),
-                                                      axis.title.y=element_blank(),
-                                                      panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-                                                      panel.grid.minor=element_blank(),plot.background=element_blank())
-    })
+    output$map <- renderImage({
+      list(
+        src = "./images/map.jpg",
+        contentType='image/jpg',
+        width = 1000,
+        height = 602
+      )}, deleteFile = F)
+
+    
+    # For some reason, this plot would not render properly/threw an error every time :'(
+    # I will be sure to fix when I turn it in!
+    
+    
+    #output$map <- renderPlot({
+    #     ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
+    #         coord_map() + geom_point(data = map_1, color="#f15b29", aes(x = longitude, y = latitude, size = Messages)) +
+    #         xlim(-180, -50) + theme_classic() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
+    #                                                   axis.text.y=element_blank(),axis.ticks=element_blank(),
+    #                                                   axis.title.x=element_blank(),
+    #                                                   axis.title.y=element_blank(),
+    #                                                   panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+    #                                                   panel.grid.minor=element_blank(),plot.background=element_blank())
+    # })
     
     output$wordPlot <- renderWordcloud2({
         
