@@ -10,12 +10,17 @@ library(wordcloud)
 library(wordcloud2)
 library(shinythemes)
 library(viridis)
+library(sf)
+library(ggmap)
+library(readxl)
 
 # Load in RDS files
 
 word_cloud <- readRDS("./rds_files/word-cloud.RDS")
 heat <- readRDS("./rds_files/times.RDS")
 house_names <- readRDS("./rds_files/house_names.RDS")
+US <- readRDS("./rds_files/US.RDS")
+map_1 <- readRDS("./rds_files/map.RDS")
 
 
 ui <- navbarPage(theme = shinytheme("united"),
@@ -47,8 +52,12 @@ ui <- navbarPage(theme = shinytheme("united"),
                               href = "mailto: sophiewebster@college.harvard.edu"),
                             "or on ",
                             a("LinkedIn.",
-                              href = "https://www.linkedin.com/in/sophie-webster-651b03171/"))
+                              href = "https://www.linkedin.com/in/sophie-webster-651b03171/")),
+                          h2("Citations"),
+                          p("D. Kahle and H. Wickham. ggmap: Spatial Visualization with ggplot2. The R Journal, 5(1),
+  144-161. URL http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf")
                           ),
+                          
                           column(1,
                               br(),
                               br(),
@@ -77,7 +86,14 @@ ui <- navbarPage(theme = shinytheme("united"),
                                         )
                               
                           )),
-                          
+                 tabPanel("By State",
+                          fluidPage(
+                              titlePanel("Messages By Student Home State"),
+                              h4("Determined From Area Code"),
+                              column(12,
+                                     mainPanel(width = 12, plotOutput("map")))
+                          )
+                          ),         
                  tabPanel("Sentiment Analysis"),
                  tabPanel("Browse Messages",
                           fluidPage(
@@ -131,6 +147,17 @@ server <- function(input, output) {
                 x = "Day",
                 y = "Hour"
             )
+    })
+    
+    output$map <- renderPlot({
+        ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
+            coord_map() + geom_point(data = map_1, color="#f15b29", aes(x = longitude, y = latitude, size = Messages)) +
+            xlim(-180, -50) + theme_classic() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
+                                                      axis.text.y=element_blank(),axis.ticks=element_blank(),
+                                                      axis.title.x=element_blank(),
+                                                      axis.title.y=element_blank(),
+                                                      panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+                                                      panel.grid.minor=element_blank(),plot.background=element_blank())
     })
     
     output$wordPlot <- renderWordcloud2({
