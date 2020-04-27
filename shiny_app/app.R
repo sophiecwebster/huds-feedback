@@ -9,11 +9,13 @@ library(tm)
 library(wordcloud)
 library(wordcloud2)
 library(shinythemes)
+library(viridis)
 
 # Load in RDS files
 
 word_cloud <- readRDS("./rds_files/word-cloud.RDS")
 heat <- readRDS("./rds_files/times.RDS")
+house_names <- readRDS("./rds_files/house_names.RDS")
 
 
 ui <- navbarPage(theme = shinytheme("united"),
@@ -57,11 +59,27 @@ ui <- navbarPage(theme = shinytheme("united"),
                               ),
                  tabPanel("By House",
                           fluidPage(
-                              plotOutput("times")
+                              
+                                     titlePanel("   Message Density Across 2019"),
+                                        h4("   Explore By Dining Hall:"),
+                                        br(),
+                                        sidebarLayout(
+                                            column(7,
+                                            sidebarPanel(
+                                                selectInput(
+                                                    inputId = "house",
+                                                    label = "House",
+                                                    c("All", sort(house_names)))
+                                                )
+                                            ),
+                                            column(12, align="center",
+                                        mainPanel(width = 12, plotOutput("times")))
+                                        )
+                              
                           )),
                           
                  tabPanel("Sentiment Analysis"),
-                 tabPanel("Browse",
+                 tabPanel("Browse Messages",
                           fluidPage(
                               
                               
@@ -95,18 +113,23 @@ server <- function(input, output) {
         )}, deleteFile = F)
     
     output$times <- renderPlot({
-        ggplot(heat, aes(day,hour, fill=n))+
+        
+        ifelse(input$house == "All",
+        houses <- heat,
+        houses <- heat %>% filter(arranged == input$house)
+            )
+            
+        ggplot(houses, aes(day,hour, fill=n))+
             geom_tile(color= "white",size=0.1) + 
             scale_fill_viridis(name = "# of Messages Sent", option = "C") +
             facet_grid(year ~ month) +
             scale_y_continuous(trans = "reverse", breaks = c(0:23)) +
             scale_x_continuous(breaks=c(1,10,20,31)) +
             theme_classic(base_size = 8) +
-            theme(legend.position = "bottom") +
+            theme(legend.position = "top") +
             labs(
                 x = "Day",
-                y = "Hour",
-                title = "Message Density Across 2019"
+                y = "Hour"
             )
     })
     
