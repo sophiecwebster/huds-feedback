@@ -13,6 +13,7 @@ library(shinythemes)
 # Load in RDS files
 
 word_cloud <- readRDS("./rds_files/word-cloud.RDS")
+heat <- readRDS("./rds_files/times.RDS")
 
 
 ui <- navbarPage(theme = shinytheme("united"),
@@ -54,7 +55,10 @@ ui <- navbarPage(theme = shinytheme("united"),
                               br(),
                               imageOutput("food", height = "100%", width = "100%"))
                               ),
-                 tabPanel("By Location"),
+                 tabPanel("By House",
+                          fluidPage(
+                              plotOutput("times")
+                          )),
                           
                  tabPanel("Sentiment Analysis"),
                  tabPanel("Browse",
@@ -89,6 +93,22 @@ server <- function(input, output) {
             width = 400,
             height = 262
         )}, deleteFile = F)
+    
+    output$times <- renderPlot({
+        ggplot(heat, aes(day,hour, fill=n))+
+            geom_tile(color= "white",size=0.1) + 
+            scale_fill_viridis(name = "# of Messages Sent", option = "C") +
+            facet_grid(year ~ month) +
+            scale_y_continuous(trans = "reverse", breaks = c(0:23)) +
+            scale_x_continuous(breaks=c(1,10,20,31)) +
+            theme_classic(base_size = 8) +
+            theme(legend.position = "bottom") +
+            labs(
+                x = "Day",
+                y = "Hour",
+                title = "Message Density Across 2019"
+            )
+    })
     
     output$wordPlot <- renderWordcloud2({
         
