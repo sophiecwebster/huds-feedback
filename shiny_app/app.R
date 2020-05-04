@@ -214,9 +214,9 @@ server <- function(input, output) {
     output$regs <- renderPlot({
       
       if (input$duration == "Month" && input$model == "Linear") {
-        print(full %>% ggplot(aes(x = month, y = ave_sentiment)) + geom_point() +
-                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), se = F, method = "lm") +
-                geom_jitter() +
+        print(full %>% ggplot(aes(x = month, y = ave_sentiment)) + geom_point(alpha = 0.3) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
+                geom_jitter(alpha = 0.5) +
                 labs(
                   x = "Month",
                   y = "Sentiment Score",
@@ -233,36 +233,36 @@ server <- function(input, output) {
                 ) +
                 theme_minimal()) 
       } else if (input$duration == "Weekday" & input$model == "Linear") {
-        print(full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point() +
-                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "lm") +
-                geom_jitter() +
+        print(full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point(alpha = 0.3) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
+                geom_jitter(alpha = 0.3) +
                 labs(
                   x = "Day of Week (1 = Monday, 7 = Sunday)",
                   y = "Sentiment Score",
                   title = "Message Sentiment Score vs. Day of Week Sent"
                 ) + stat_cor(label.y = 1.30) + stat_regline_equation(label.y = 1.44))
       } else if (input$duration == "Weekday" & input$model == "LOESS") {
-        print(full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point() +
-                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "loess") +
-                geom_jitter() +
+        print(full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point(alpha = 0.3) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "loess", color = "#e95420") +
+                geom_jitter(alpha = 0.3) +
                 labs(
                   x = "Day of Week (1 = Monday, 7 = Sunday)",
                   y = "Sentiment Score",
                   title = "Message Sentiment Score vs. Day of Week Sent"
                 ))
       } else if (input$duration == "Hour" & input$model == "Linear") {
-        print(full %>% ggplot(aes(x = hour, y = ave_sentiment)) + geom_point() +
-                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "lm") +
-                geom_jitter() +
+        print(full %>% ggplot(aes(x = hour, y = ave_sentiment)) + geom_point(alpha=0.3) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
+                geom_jitter(alpha = 0.3) +
                 labs(
                   x = "Hour of Day",
                   y = "Sentiment Score",
                   title = "Message Sentiment Score vs. Hour Sent"
                 ) + stat_cor(label.y = 1.30) + stat_regline_equation(label.y = 1.45))
       } else if (input$duration == "Hour" & input$model == "LOESS") {
-        print(full %>% ggplot(aes(x = hour, y = ave_sentiment)) + geom_point() +
-                geom_jitter() +
-                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "loess") +
+        print(full %>% ggplot(aes(x = hour, y = ave_sentiment)) + geom_point(alpha = 0.3) +
+                geom_jitter(alpha = 0.3) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "loess", color = "#e95420") +
                 labs(
                   x = "Hour of Day",
                   y = "Sentiment Score",
