@@ -27,7 +27,7 @@ comments <- readRDS("./rds_files/comments.RDS")
 top_four <- readRDS("./rds_files/top-four.RDS")
 full <- readRDS("./rds_files/full.RDS")
 
-#marquee_list <- list(marquee(comments))
+marquee_list <- list(marquee("comments"))
 
 
 ui <- navbarPage(theme = shinytheme("united"),
@@ -113,39 +113,43 @@ ui <- navbarPage(theme = shinytheme("united"),
                           ),       
                  
                  tabPanel("Sentiment Analysis",
-                         fluidPage(
-                           titlePanel("Sentiment Analysis & Regression"),
-                           p("Perhaps the most critical piece of information we can know before we make any judgments surrounding the volume of messages is the nature of their contents. 
+                          fluidPage(
+                            titlePanel("Sentiment Analysis & Regression"),
+                            p("Perhaps the most critical piece of information we can know before we make any judgments surrounding the volume of messages is the nature of their contents. 
                              Using the `rsentiment` package, I assigned each message a sentiment score, with positive values mapping onto more positive content, whereas negative values suggest criticism."),
-                           p("Hour of day shows a weak, positive relationship with sentiment, suggesting that the attitudes of texters improve through the day or that dinner may simply be better than lunch. A similar progression 
+                            p("Hour of day shows a weak, positive relationship with sentiment, suggesting that the attitudes of texters improve through the day or that dinner may simply be better than lunch. A similar progression 
                              is visible from Monday to Sunday, while month shows a slightly negative relationship with message sentiment."),
-                           br(),
-                           sidebarLayout(
-                             column(5,
-                                    sidebarPanel(width = 7,
-                                      selectInput(
-                                        inputId = "duration",
-                                        label = "Time Period",
-                                        c("Hour", "Weekday", "Month")),
-                                      p("Toggle to view the relationship between sentiment and differing submission periods.")
-                                      
-                                    )
-                         ),
-                         column(7, align="left",
-                                mainPanel(width = 40, plotOutput("regs")))
-                          
-                           ))),
+                            br(),
+                                       fluidRow(
+                                         column(3,
+                                                selectInput(
+                                                  inputId = "duration",
+                                                  label = "Time Period",
+                                                  c("Hour", "Weekday", "Month")),
+                                                p("Toggle to view the relationship between sentiment and differing submission periods."),
+                                                br(),
+                                  
+                                                selectInput(
+                                                  inputId = "model",
+                                                  label = "Regression Type",
+                                                  c("Linear", "LOESS")
+                                                )
+                                         ),
+                                         column(9, align="left",
+                                                mainPanel(width = 40, plotOutput("regs")))
+                                         
+                                       ))),
                  tabPanel("Browse Messages",
                           fluidPage(
                               # Trying to get a marquee going; I'll figure this out later.
-                              # mainPanel(renderCSS(type="text", loader=marquee_list)),
+                              #mainPanel(renderCSS(type="text", loader=marquee_list)),
+                              #marquee("<marquee>hello there! Hover over a word to see how many times it occurs across all messages </marquee>"),
                               h2("Text-and-Tell Word Cloud", align="left"),
                               h4("Hover over a word to see how many times it occurs across all messages!", align="left"),
                               br(),
                               column(12, align="center",
                               wordcloud2Output("wordPlot"), class = 'rightAlign'
                               ))))
-
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -209,55 +213,63 @@ server <- function(input, output) {
     
     output$regs <- renderPlot({
       
-      if (input$duration == "Month") {
+      if (input$duration == "Month" && input$model == "Linear") {
         print(full %>% ggplot(aes(x = month, y = ave_sentiment)) + geom_point() +
-          geom_smooth(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), se = F, method = "lm") +
-          labs(
-            x = "Month",
-            y = "Sentiment Score",
-            title = "Message Sentiment Score vs. Month Sent"
-          ) + stat_cor(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), label.x = 7, label.y = 1.2) + stat_regline_equation(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), label.x = 7, label.y = 1.35))
-      } else if (input$duration == "Weekday") {
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), se = F, method = "lm") +
+                geom_jitter() +
+                labs(
+                  x = "Month",
+                  y = "Sentiment Score",
+                  title = "Message Sentiment Score vs. Month Sent"
+                ) + stat_cor(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), label.x = 7, label.y = 1.2) + stat_regline_equation(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), label.x = 7, label.y = 1.35))
+      } else if (input$duration == "Month" & input$model == "LOESS") {
+        print(full %>% ggplot(aes(x = month, y = ave_sentiment)) + geom_point(alpha = 0.3) +
+                geom_jitter(alpha = 0.5) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), se = F, method = "loess", color = "#e95420", width = 2) +
+                labs(
+                  x = "Month",
+                  y = "Sentiment Score",
+                  title = "Message Sentiment Score vs. Month Sent"
+                ) +
+                theme_minimal()) 
+      } else if (input$duration == "Weekday" & input$model == "Linear") {
         print(full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point() +
                 geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "lm") +
+                geom_jitter() +
                 labs(
                   x = "Day of Week (1 = Monday, 7 = Sunday)",
                   y = "Sentiment Score",
                   title = "Message Sentiment Score vs. Day of Week Sent"
                 ) + stat_cor(label.y = 1.30) + stat_regline_equation(label.y = 1.44))
-          } else if (input$duration == "Hour") {
-            print(full %>% ggplot(aes(x = hour, y = ave_sentiment)) + geom_point() +
-                    geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "lm") +
-                    labs(
-                      x = "Hour of Day",
-                      y = "Sentiment Score",
-                      title = "Message Sentiment Score vs. Hour Sent"
-                    ) + stat_cor(label.y = 1.30) + stat_regline_equation(label.y = 1.45))
-             }
+      } else if (input$duration == "Weekday" & input$model == "LOESS") {
+        print(full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point() +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "loess") +
+                geom_jitter() +
+                labs(
+                  x = "Day of Week (1 = Monday, 7 = Sunday)",
+                  y = "Sentiment Score",
+                  title = "Message Sentiment Score vs. Day of Week Sent"
+                ))
+      } else if (input$duration == "Hour" & input$model == "Linear") {
+        print(full %>% ggplot(aes(x = hour, y = ave_sentiment)) + geom_point() +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "lm") +
+                geom_jitter() +
+                labs(
+                  x = "Hour of Day",
+                  y = "Sentiment Score",
+                  title = "Message Sentiment Score vs. Hour Sent"
+                ) + stat_cor(label.y = 1.30) + stat_regline_equation(label.y = 1.45))
+      } else if (input$duration == "Hour" & input$model == "LOESS") {
+        print(full %>% ggplot(aes(x = hour, y = ave_sentiment)) + geom_point() +
+                geom_jitter() +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "loess") +
+                labs(
+                  x = "Hour of Day",
+                  y = "Sentiment Score",
+                  title = "Message Sentiment Score vs. Hour Sent"
+                ))
+      }
      
-    
-      
-      # full %>% ggplot(aes(x = .$x, y = ave_sentiment)) + geom_point() +
-      #   geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "lm")
-      
-      # ifelse(
-      #   input$duration == "Month",
-      #   x <- as.character(tolower(input$duration)),
-      #   ifelse(
-      #     input$duration == "Weekday",
-      #     full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point() +
-      #       geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "lm"),
-      #     full %>% ggplot(aes(x = hour, y = ave_sentiment)) + geom_point() +
-      #       geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "lm")
-      #   )
-      # )
-      
-     # x <- tolower(input$duration)
-      # num <- grep(pattern = x, colnames(full))
-      
-        #full %>% ggplot(aes(x = .[1], y = .[2])) + geom_point() +
-        #geom_smooth(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), se = F, method = "lm")
-      
     })
 
     
@@ -276,10 +288,10 @@ server <- function(input, output) {
     #                                                   panel.grid.minor=element_blank(),plot.background=element_blank())
     # })
     
-    # output$scroll <- renderCSS({
-    #   marquee(comments, behavior = "scroll", direction = "left",
-    #           scrollamount = 6, width = "100%")
-    # })
+     output$scroll <- renderCSS({
+       marquee(marquee_list, behavior = "scroll", direction = "left",
+              scrollamount = 6, width = "100%")
+     })
     
      output$wordPlot <- renderWordcloud2({
         
