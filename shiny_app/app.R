@@ -151,7 +151,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                               wordcloud2Output("wordPlot"), class = 'rightAlign'
                               ))))
 
-# Define server logic required to draw a histogram
+
 server <- function(input, output) {
     
     # Adding two images for the About tab
@@ -215,8 +215,8 @@ server <- function(input, output) {
       
       if (input$duration == "Month" && input$model == "Linear") {
         print(full %>% ggplot(aes(x = month, y = ave_sentiment)) + geom_point(alpha = 0.3) +
-                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
                 geom_jitter(alpha = 0.5) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$month), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
                 labs(
                   x = "Month",
                   y = "Sentiment Score",
@@ -234,8 +234,8 @@ server <- function(input, output) {
                 theme_minimal()) 
       } else if (input$duration == "Weekday" & input$model == "Linear") {
         print(full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point(alpha = 0.3) +
-                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
                 geom_jitter(alpha = 0.3) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
                 labs(
                   x = "Day of Week (1 = Monday, 7 = Sunday)",
                   y = "Sentiment Score",
@@ -243,8 +243,8 @@ server <- function(input, output) {
                 ) + stat_cor(label.y = 1.30) + stat_regline_equation(label.y = 1.44))
       } else if (input$duration == "Weekday" & input$model == "LOESS") {
         print(full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point(alpha = 0.3) +
-                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "loess", color = "#e95420") +
                 geom_jitter(alpha = 0.3) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$weekday), y = full$ave_sentiment), se = F, method = "loess", color = "#e95420") +
                 labs(
                   x = "Day of Week (1 = Monday, 7 = Sunday)",
                   y = "Sentiment Score",
@@ -252,8 +252,8 @@ server <- function(input, output) {
                 ))
       } else if (input$duration == "Hour" & input$model == "Linear") {
         print(full %>% ggplot(aes(x = hour, y = ave_sentiment)) + geom_point(alpha=0.3) +
-                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
                 geom_jitter(alpha = 0.3) +
+                geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
                 labs(
                   x = "Hour of Day",
                   y = "Sentiment Score",
