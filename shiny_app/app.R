@@ -95,7 +95,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                               titlePanel("Messages By Student Home State"),
                               h4("Determined From Area Code"),
                               column(12,
-                                     mainPanel(width = 12, imageOutput("map")))),
+                                     mainPanel(width = 12, imageOutput("map", width="auto", height="auto")))),
                               
                           fluidPage(
                             column(7, align="left",
@@ -198,7 +198,7 @@ server <- function(input, output) {
         src = "./images/map.jpg",
         contentType='image/jpg',
         width = 700,
-        height = 420
+        height = 457
       )}, deleteFile = F)
     
     output$top_four <- renderPlot({
