@@ -6,7 +6,7 @@ library(tm)
 library(wordcloud)
 library(wordcloud2)
 
-tntell <- read.csv('./huds-feedback/textntell.csv', stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
+tntell <- read.csv('./textntell.csv', stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
  
 
 tntell$arranged <- tntell$Location %>% fct_relevel("Annenberg", "Lowell", "Dunster", "Cabot", "Quincy", "Mather", "Pforzheimer", "Winthrop", "Currier", "Leverett", "Eliot", "Adams", "Hillel", "Kirkland", "FlyBy", "Dudley")
@@ -62,7 +62,7 @@ located <- left_join(tntell[, c(1,2,4,5,6,7)], tab, by = c("area" = "Area.code")
 
  
 
- {r making geographic plot}
+ #{r making geographic plot}
 #"#f3b204", "#F59187"
 located %>%
   ggplot(aes(Location)) + 
@@ -74,7 +74,7 @@ located %>%
   labs(y = "", x = "", title = "Number of Messages Sent by Student Home State", caption = "*International students likely included in MA counts")
  
 
-{r top four states, per capita}
+#{r top four states, per capita}
 
 top_four <- located %>%
   filter(Location %in% c("Massachusetts", "Texas", "California", "New York")) %>%
@@ -105,8 +105,10 @@ internat <- located %>%
 internat$n <- internat$n / c(944, 2124, 944, 708)
 internat %>%
   ggplot(aes(Location, n)) + geom_col(fill = "#f3b204") +
-  labs(x = "Home State", y = "HUDS Messages Per Capita", title = "Messages Per Capita By Student Home State", subtitle = "Including International Students in Massachusetts' Count")
+  labs(x = "Home State", y = "HUDS Messages Per Capita", title = "Messages Per Capita By Student Home State", subtitle = "Including International Students in Massachusetts' Count") +
+  theme_minimal()
  
+saveRDS(internat, "~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/ma_adjusted.RDS")
 
 comment <- as.character(tntell$Comment)
 doc <- Corpus(VectorSource(comment))
