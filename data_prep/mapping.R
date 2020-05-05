@@ -104,8 +104,8 @@ hi <- tm_shape(US) + tm_borders()
 
 saveRDS(to_plot, "~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/map.RDS")
 
-ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
-  coord_map() + geom_point(data = to_plot, aes(x = longitude, y = latitude, size = Messages, color=Sentiment)) +
+map_2 <- ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
+  coord_map() + geom_point(data = to_plot, aes(x = longitude, y = latitude, name = Location, size = Messages, color=Sentiment, text = paste("State:", to_plot$Location, "<br>", "Sentiment:", to_plot$Sentiment %>% round(digits = 4), "<br>", "Message Count:", to_plot$Messages))) +
   xlim(-180, -50) + theme_classic() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
                                             axis.text.y=element_blank(),axis.ticks=element_blank(),
                                             axis.title.x=element_blank(),
@@ -113,6 +113,10 @@ ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group 
                                             panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
                                             panel.grid.minor=element_blank(),plot.background=element_blank()) +
   scale_color_viridis(option = "B")
+
+saveRDS(map_2, "~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/map_2.RDS")
+
+ggplotly(map_2, tooltip = "text") %>% layout(showlegend = T)
 
 ggsave('~/Desktop/Gov 1005/huds-feedback/shiny_app/images/map.jpg', last_plot())
 
