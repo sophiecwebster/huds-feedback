@@ -15,6 +15,7 @@ library(ggmap)
 library(readxl)
 library(shinycustomloader)
 library(ggpubr)
+library(plotly)
 
 # Load in RDS files
 
@@ -25,7 +26,9 @@ US <- readRDS("./rds_files/US.RDS")
 map_1 <- readRDS("./rds_files/map.RDS")
 comments <- readRDS("./rds_files/comments.RDS")
 top_four <- readRDS("./rds_files/top-four.RDS")
+ma_adjusted <- readRDS("./rds_files/ma_adjusted.RDS")
 full <- readRDS("./rds_files/full.RDS")
+map_2 <- readRDS("./rds_files/map_2.RDS")
 
 marquee_list <- list(marquee("comments"))
 
@@ -95,20 +98,22 @@ ui <- navbarPage(theme = shinytheme("united"),
                               titlePanel("Messages By Student Home State"),
                               h4("Determined From Area Code"),
                               column(12,
-                                     mainPanel(width = 12, imageOutput("map", width="auto", height="auto")))),
+                                     mainPanel(width = 12, withLoader(plotlyOutput("map_2", width="90%", height = "auto"), type="html", loader="loader2")))),#imageOutput("map", width="auto", height="auto")))),
                               
                           fluidPage(
-                            column(7, align="left",
+                            column(11, align="left",
                             p("While it sure looks like there are a much higher density of die-hard HUDS texters hailing from the Northeast and California, it's
                                important to remember that these numbers do not into take account relative abundance of these states' residents. Below is a plot
                                for the top four represented states, adjusted per capita."),
                             p("Massachusetts nonetheless looks awfully high; however, most international students acquire a 617 area code upon arriving at school, so they too are lumped in with 
-                               MA residents."),
+                               MA residents. This is adjusted for in the plot at the right, which tells a much more believable story."),
                             br()
                           )),
                           fluidPage(
-                              column(7,
-                                     plotOutput("top_four")))
+                              column(6,
+                                     plotOutput("top_four")),
+                              column(6,
+                                     plotOutput("ma_adjusted")))
                           
                           ),       
                  
@@ -193,13 +198,19 @@ server <- function(input, output) {
             )
     })
     
-    output$map <- renderImage({
-      list(
-        src = "./images/map.jpg",
-        contentType='image/jpg',
-        width = 700,
-        height = 457
-      )}, deleteFile = F)
+    # rendering interactive map with plotly 
+    
+    output$map_2 <- renderPlotly({
+      ggplotly(map_2, tooltip = "text") %>% layout(showlegend = T)
+    })
+    
+    # output$map <- renderImage({
+    #   list(
+    #     src = "./images/map.jpg",
+    #     contentType='image/jpg',
+    #     width = 700,
+    #     height = 457
+    #   )}, deleteFile = F)
     
     output$top_four <- renderPlot({
       top_four$n <- top_four$n / c(944, 708, 944, 944)
@@ -209,6 +220,13 @@ server <- function(input, output) {
         labs(x = "Home State", y = "HUDS Messages Per Capita", title = "Messages Per Capita By Student Home State", subtitle = "For Top Four States") +
         theme_minimal()
       
+    })
+    
+    output$ma_adjusted <- renderPlot({
+      ma_adjusted %>%
+        ggplot(aes(Location, n)) + geom_col(fill = "#f3b204") +
+        labs(x = "Home State", y = "HUDS Messages Per Capita", title = "Messages Per Capita By Student Home State", subtitle = "Including International Students in Massachusetts' Count") +
+        theme_minimal()
     })
     
     output$regs <- renderPlot({
