@@ -9,6 +9,7 @@ library(lubridate)
 library(sf)
 library(ggmap)
 library(readxl)
+library(viridis)
 
 tntell <- read.csv("./textntell.csv", stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
 
@@ -74,26 +75,46 @@ revised_loc <- locations %>%
   group_by(Location) %>%
   count()
 
+# introducing sentiment analysis!
+
+phrases <- get_sentences(locations$Comment)
+sentiments <- sentiment_by(phrases)
+
+sentiment_loc <- cbind(locations, sentiments)
+
+# finding states' average sentiment score
+
+sentiments_avg <- sentiment_loc %>% group_by(Location) %>% 
+  summarize(state_avg = mean(ave_sentiment))
+
 to_plot <- left_join(revised_loc, state_ids, by = "Location")
 
-to_plot <- rename(to_plot, "Messages" = n)
+# tacking on sentiments
 
-to_plot <- to_plot[1:4]
+to_plot <- left_join(to_plot, sentiments_avg, by = "Location")
+
+to_plot <- rename(to_plot, "Messages" = n)
+to_plot <- rename(to_plot, "Sentiment"=state_avg)
+
+#to_plot <- to_plot[1:4]
 
 to_plot <- to_plot %>% filter(!is.na(latitude))
+
+hi <- tm_shape(US) + tm_borders()
 
 saveRDS(to_plot, "~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/map.RDS")
 
 ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
-  coord_map() + geom_point(data = to_plot, color="#f15b29", aes(x = longitude, y = latitude, size = Messages)) +
+  coord_map() + geom_point(data = to_plot, aes(x = longitude, y = latitude, size = Messages, color=Sentiment)) +
   xlim(-180, -50) + theme_classic() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
                                             axis.text.y=element_blank(),axis.ticks=element_blank(),
                                             axis.title.x=element_blank(),
                                             axis.title.y=element_blank(),
                                             panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-                                            panel.grid.minor=element_blank(),plot.background=element_blank())
+                                            panel.grid.minor=element_blank(),plot.background=element_blank()) +
+  scale_color_viridis(option = "B")
 
-#ggsave('~/Desktop/Gov 1005/huds-feedback/shiny_app/images/map.jpg', last_plot())
+ggsave('~/Desktop/Gov 1005/huds-feedback/shiny_app/images/map.jpg', last_plot())
 
 
 
