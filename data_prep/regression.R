@@ -80,3 +80,28 @@ ggplot(aes(month, y = ave_sentiment)) + geom_point() +
 
 new <- full %>% select(c("month", "ave_sentiment"))
 
+
+full.summary <- full %>%
+  group_by(weekday) %>%
+  summarize(
+    ymean = mean(ave_sentiment),
+    ysd = sd(ave_sentiment),
+    ymin = min(ave_sentiment),
+    ymax = max(ave_sentiment)
+  ) %>% na.omit(.)
+
+full <- left_join(full, full.summary, by = "weekday")
+
+full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + #geom_point(alpha=0.3) +
+  #geom_jitter(alpha = 0.3) +
+  #geom_smooth(inherit.aes = F, aes(x = as.numeric(full$hour), y = full$ave_sentiment), se = F, method = "lm", color = "#e95420") +
+  labs(
+    x = "Hour of Day",
+    y = "Sentiment Score",
+    title = "Message Sentiment Score vs. Hour Sent"
+  ) + stat_cor(label.y = 1.30) + stat_regline_equation(label.y = 1.45) +
+  geom_errorbar(aes(ymin = (ymean-ysd), ymax = (ymean+ysd)))
+
+
+
+
