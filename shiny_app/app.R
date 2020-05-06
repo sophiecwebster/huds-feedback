@@ -97,13 +97,14 @@ ui <- navbarPage(theme = shinytheme("united"),
                                                     inputId = "house",
                                                     label = "House",
                                                     c("All", sort(house_names)))
-                                                )
+                                                    
+                                                ),
                                             ),
                                             column(12, align="center",
-                                        mainPanel(width = 12, withLoader(plotOutput("times"), type="html", loader="loader2"), br())),
+                                        mainPanel(width = 12, withLoader(plotOutput("times"), type="html", loader="loader2"), br()))),
                                         )
                               
-                          )),
+                          ),
                  tabPanel("By State",
                           fluidPage(
                               titlePanel("Messages By Student Home State"),
