@@ -138,3 +138,20 @@ wordcloud2(df, size = 1.3, color = rep_len(c("#f15b29", "#2bb673", "#BDD2FF", "#
 # for my attempt at a CSS scrolling marquee
 
 saveRDS(tntell$Comment, "~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/comments.RDS")
+
+
+ggdotchart(per_cap, x = "House", y = "Messages", color = "#f15b29", add = "segments", add.params = list(color = "#e95420", size = 0.7), dot.size = 6, label = round(per_cap$Messages), font.label = list(color = "white", size = 8, 
+                                                                                                                                                       vjust = 0.5, ggtheme = theme_pubr())) + coord_flip() +
+  labs(x = "", y="Message Count")
+
+per_cap <- per_cap %>%
+  mutate(cap = Messages/Student.Pop)
+
+saveRDS(per_cap, "~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/per_cap.RDS")
+ggdotchart(per_cap, x = "House", y = "cap", color = "#00AFBB", add = "segments", add.params = list(color = "#00AFBB", size = 0.7), dot.size = 6, label = round(per_cap$cap, digits = 2), font.label = list(color = "white", size = 7, 
+                                                                                                                                                                                                         vjust = 0.5, ggtheme = theme_pubr())) + coord_flip() +
+  labs(x = "", y="Messages Per Capita")
+
+
+
+

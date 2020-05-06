@@ -10,6 +10,7 @@ library(sf)
 library(ggmap)
 library(readxl)
 library(viridis)
+library(sentimentr)
 
 tntell <- read.csv("./textntell.csv", stringsAsFactors = FALSE) %>% select(Start, Tracker, Location, Mobile.Number, Comment)
 
@@ -100,12 +101,12 @@ to_plot <- rename(to_plot, "Sentiment"=state_avg)
 
 to_plot <- to_plot %>% filter(!is.na(latitude))
 
-hi <- tm_shape(US) + tm_borders()
+#hi <- tm_shape(US) + tm_borders()
 
 saveRDS(to_plot, "~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/map.RDS")
 
-map_2 <- ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
-  coord_map() + geom_point(data = to_plot, aes(x = longitude, y = latitude, name = Location, size = Messages, color=Sentiment, text = paste("State:", to_plot$Location, "<br>", "Sentiment:", to_plot$Sentiment %>% round(digits = 4), "<br>", "Message Count:", to_plot$Messages))) +
+hey <- ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
+  geom_point(data = to_plot, aes(x = longitude, y = latitude, size = Messages, color=Sentiment, text = paste("State:", to_plot$Location, "<br>", "Sentiment:", to_plot$Sentiment %>% round(digits = 4), "<br>", "Message Count:", to_plot$Messages))) +
   xlim(-180, -50) + theme_classic() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
                                             axis.text.y=element_blank(),axis.ticks=element_blank(),
                                             axis.title.x=element_blank(),
@@ -116,15 +117,41 @@ map_2 <- ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", a
 
 saveRDS(map_2, "~/Desktop/Gov 1005/huds-feedback/shiny_app/rds_files/map_2.RDS")
 
-ggplotly(map_2, tooltip = "text") %>% layout(showlegend = T)
+ggplotly(hey, tooltip = "text") %>% layout(showlegend = T)
 
 ggsave('~/Desktop/Gov 1005/huds-feedback/shiny_app/images/map.jpg', last_plot())
 
 
 
+# final forms -- time to make a GIF!
 
+p<-ggdotchart(per_cap, 
+           x = "House", 
+           y = "Messages", 
+           color = "#f15b29", 
+           add = "segments", 
+           add.params = list(color = "#e95420", size = 1.5), 
+           dot.size = 7, 
+           label = round(per_cap$Messages), 
+           font.label = list(color = "white", size = 9, 
+                             vjust = 0.5, ggtheme = theme_pubr())) + coord_flip() +
+  labs(x = "", y="Message Count", title="Message Count By House (Absolute)")
 
+ggsave('~/Desktop/Gov 1005/huds-feedback/shiny_app/images/house.png', dpi="retina", plot = p)
 
+m <- ggdotchart(per_cap, 
+           x = "House", 
+           y = "cap", 
+           color = "#00AFBB", 
+           add = "segments", 
+           add.params = list(color = "#00AFBB", size = 1.5), 
+           dot.size = 8, label = round(per_cap$cap, digits = 2), font.label = list(color = "white", size = 9, 
+                                                                                   vjust = 0.5, ggtheme = theme_pubr())) + coord_flip() +
+  labs(x = "", y="Messages Per Capita", title="Message Count By House (Per Capita)")
+
+ggsave('~/Desktop/Gov 1005/huds-feedback/shiny_app/images/per_cap.png', dpi="retina", plot = m)
+
+gifski(c("~/Desktop/Gov 1005/huds-feedback/shiny_app/images/house.png", "~/Desktop/Gov 1005/huds-feedback/shiny_app/images/per_cap.png"), delay=4, gif_file = '~/Desktop/Gov 1005/huds-feedback/shiny_app/images/house.gif')
 
 
 
