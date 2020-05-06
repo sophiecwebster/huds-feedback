@@ -15,6 +15,7 @@ library(readxl)
 library(shinycustomloader)
 library(ggpubr)
 library(plotly)
+library(DT)
 
 # Load in RDS files
 
@@ -28,6 +29,7 @@ top_four <- readRDS("./rds_files/top-four.RDS")
 ma_adjusted <- readRDS("./rds_files/ma_adjusted.RDS")
 full <- readRDS("./rds_files/full.RDS")
 per_cap <- readRDS("./rds_files/per_cap.RDS")
+table <- readRDS("./rds_files/table.RDS")
 
 marquee_list <- list(marquee("comments"))
 
@@ -167,8 +169,15 @@ ui <- navbarPage(theme = shinytheme("united"),
                               h4("Hover over a word to see how many times it occurs across all messages!", align="left"),
                               br(),
                               column(12, align="center",
-                              wordcloud2Output("wordPlot"), class = 'rightAlign'
-                              ))))
+                              wordcloud2Output("wordPlot"), class = 'rightAlign',
+                              br(), br()),
+                              
+                              column(12, align="left",
+                                     h2("Peruse & Search a Sample of Messages"),
+                                     h4("Trust me, there are some gems in here."),
+                                     br(),
+                                     dataTableOutput("table"), br())
+                              )))
 
 
 server <- function(input, output) {
@@ -375,6 +384,8 @@ server <- function(input, output) {
         wordcloud2(word_cloud, size = 1.3, color = rep_len(c("#f15b29", "#2bb673", "#BDD2FF", "#f3b204", "#F59187"), nrow(demoFreq)))
         
     })
+     
+    output$table <- renderDataTable(table, server=F)
 }
 
 # Run the application 
