@@ -11,7 +11,6 @@ library(wordcloud2)
 library(shinythemes)
 library(viridis)
 library(sf)
-library(ggmap)
 library(readxl)
 library(shinycustomloader)
 library(ggpubr)
@@ -23,12 +22,12 @@ word_cloud <- readRDS("./rds_files/word-cloud.RDS")
 heat <- readRDS("./rds_files/times.RDS")
 house_names <- readRDS("./rds_files/house_names.RDS")
 US <- readRDS("./rds_files/US.RDS")
-map_1 <- readRDS("./rds_files/map.RDS")
+to_plot <- readRDS("./rds_files/map.RDS")
 comments <- readRDS("./rds_files/comments.RDS")
 top_four <- readRDS("./rds_files/top-four.RDS")
 ma_adjusted <- readRDS("./rds_files/ma_adjusted.RDS")
 full <- readRDS("./rds_files/full.RDS")
-map_2 <- readRDS("./rds_files/map_2.RDS")
+per_cap <- readRDS("./rds_files/per_cap.RDS")
 
 marquee_list <- list(marquee("comments"))
 
@@ -39,6 +38,8 @@ ui <- navbarPage(theme = shinytheme("united"),
                  ## About ##
                  
                  tabPanel("About",
+                          fluidPage(
+                          fluidRow(
                           column(7,
 
                           h1("Background"),
@@ -65,22 +66,32 @@ ui <- navbarPage(theme = shinytheme("united"),
                               href = "https://www.linkedin.com/in/sophie-webster-651b03171/"))
                           ),
                           
-                          column(1,
+                          column(5,
                               br(),
                               br(),
                               imageOutput("huds", height = "100%", width = "100%"),
                               br(),
                               br(),
                               imageOutput("food", height = "100%", width = "100%"))
-                              ),
+                              ))),
                  tabPanel("By House",
                           fluidPage(
                               
-                                     titlePanel("   Message Density Across 2019"),
-                                        h4("   Explore By Dining Hall:"),
+                                     titlePanel("   Exploring Messages By Dining Hall"),
+                                     br(),
+                                      
+                                    fluidRow(
+                                      column(5, 
+                                             withLoader(imageOutput("percap"), type="html", loader="loader2"),
+                                             ),
+                                      column(7,
+                                             p("lorem ipsum"))
+                                    ),
                                         br(),
                                         sidebarLayout(
                                             column(7,
+                                            h3("Message Density Across 2019"),
+                                            br(),
                                             sidebarPanel(
                                                 selectInput(
                                                     inputId = "house",
@@ -89,7 +100,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                                                 )
                                             ),
                                             column(12, align="center",
-                                        mainPanel(width = 12, plotOutput("times")))
+                                        mainPanel(width = 12, withLoader(plotOutput("times"), type="html", loader="loader2"), br())),
                                         )
                               
                           )),
@@ -97,23 +108,25 @@ ui <- navbarPage(theme = shinytheme("united"),
                           fluidPage(
                               titlePanel("Messages By Student Home State"),
                               h4("Determined From Area Code"),
-                              column(12,
-                                     mainPanel(width = 12, withLoader(plotlyOutput("map_2", width="90%", height = "auto"), type="html", loader="loader2")))),#imageOutput("map", width="auto", height="auto")))),
-                              
+                              fluidRow(
+                              column(11, align="center",
+                                     mainPanel(width = 12, withLoader(plotlyOutput("map_2", width="78%", height = "auto"), type="html", loader="loader2"))))),#imageOutput("map", width="auto", height="auto")))),
+                                      
                           fluidPage(
                             column(11, align="left",
-                            p("While it sure looks like there are a much higher density of die-hard HUDS texters hailing from the Northeast and California, it's
-                               important to remember that these numbers do not into take account relative abundance of these states' residents. Below is a plot
+                            p("While it sure looks like there is a much higher density of die-hard HUDS texters hailing from the Northeast and California, it's
+                               important to remember that these numbers do not into take account relative abundance of these states' student populations. Below is a plot
                                for the top four represented states, adjusted per capita."),
-                            p("Massachusetts nonetheless looks awfully high; however, most international students acquire a 617 area code upon arriving at school, so they too are lumped in with 
-                               MA residents. This is adjusted for in the plot at the right, which tells a much more believable story."),
+                            p("Massachusetts nonetheless looks awfully high, over double the per capita sending of California, with the next highest value. However, it bears mentioning that most international students acquire a '617' area code upon arriving at school, so they too are lumped in with 
+                               Massachusetts residents. The number of international students is included in the adjusted plot at the right, which tells a much more believable story."),
                             br()
                           )),
                           fluidPage(
                               column(6,
                                      plotOutput("top_four")),
                               column(6,
-                                     plotOutput("ma_adjusted")))
+                                     plotOutput("ma_adjusted"))),
+                          br()
                           
                           ),       
                  
@@ -177,6 +190,41 @@ server <- function(input, output) {
             height = 262
         )}, deleteFile = F)
     
+    output$percap <- renderImage({
+      list(
+        src = './images/house.gif',
+        contentType = 'image/gif',
+        width = 500,
+        height = 400
+      )
+    }, deleteFile = F)
+    
+    # output$house <- renderPlot({
+    #   ggdotchart(per_cap, 
+    #              x = "House", 
+    #              y = "Messages", 
+    #              color = "#f15b29", 
+    #              add = "segments", 
+    #              add.params = list(color = "#e95420", size = 1.5), 
+    #              dot.size = 7, 
+    #              label = round(per_cap$Messages), 
+    #              font.label = list(color = "white", size = 9, 
+    #             vjust = 0.5, ggtheme = theme_pubr())) + coord_flip() +
+    #     labs(x = "", y="Message Count")
+    # })
+    # 
+    # output$percap <- renderPlot({
+    #   ggdotchart(per_cap, 
+    #              x = "House", 
+    #              y = "cap", 
+    #              color = "#00AFBB", 
+    #              add = "segments", 
+    #              add.params = list(color = "#00AFBB", size = 1.5), 
+    #              dot.size = 8, label = round(per_cap$cap, digits = 2), font.label = list(color = "white", size = 9, 
+    #              vjust = 0.5, ggtheme = theme_pubr())) + coord_flip() +
+    #     labs(x = "", y="Messages Per Capita")
+    # })
+    
     output$times <- renderPlot({
         
         ifelse(input$house == "All",
@@ -201,7 +249,18 @@ server <- function(input, output) {
     # rendering interactive map with plotly 
     
     output$map_2 <- renderPlotly({
-      ggplotly(map_2, tooltip = "text") %>% layout(showlegend = T)
+      
+      map_2 <- ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
+        geom_point(data = to_plot, aes(x = longitude, y = latitude, name = Location, size = Messages, color=Sentiment, text = paste("State:", to_plot$Location, "<br>", "Sentiment:", to_plot$Sentiment %>% round(digits = 4), "<br>", "Message Count:", to_plot$Messages))) +
+        xlim(-180, -50) + theme_classic() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
+                                                  axis.text.y=element_blank(),axis.ticks=element_blank(),
+                                                  axis.title.x=element_blank(),
+                                                  axis.title.y=element_blank(),
+                                                  panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+                                                  panel.grid.minor=element_blank(),plot.background=element_blank()) +
+        scale_color_viridis(option = "B")
+      
+      ggplotly(map_2, tooltip = "text")
     })
     
     # output$map <- renderImage({
@@ -225,7 +284,7 @@ server <- function(input, output) {
     output$ma_adjusted <- renderPlot({
       ma_adjusted %>%
         ggplot(aes(Location, n)) + geom_col(fill = "#f3b204") +
-        labs(x = "Home State", y = "HUDS Messages Per Capita", title = "Messages Per Capita By Student Home State", subtitle = "Including International Students in Massachusetts' Count") +
+        labs(x = "Home State", y = "HUDS Messages Per Capita", title = "Messages Per Capita By Student Home State", subtitle = "Adjusting for International Students") +
         theme_minimal()
     })
     
@@ -248,8 +307,7 @@ server <- function(input, output) {
                   x = "Month",
                   y = "Sentiment Score",
                   title = "Message Sentiment Score vs. Month Sent"
-                ) +
-                theme_minimal()) 
+                )) 
       } else if (input$duration == "Weekday" & input$model == "Linear") {
         print(full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + geom_point(alpha = 0.3) +
                 geom_jitter(alpha = 0.3) +
