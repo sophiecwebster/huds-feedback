@@ -68,7 +68,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                               href = "https://www.linkedin.com/in/sophie-webster-651b03171/"))
                           ),
                           
-                          column(5,
+                          column(5, align="center",
                               br(),
                               br(),
                               imageOutput("huds", height = "100%", width = "100%"),
