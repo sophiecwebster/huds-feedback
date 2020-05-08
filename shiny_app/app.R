@@ -125,7 +125,9 @@ ui <- navbarPage(theme = shinytheme("united"),
                                       
                           fluidPage(
                             column(11, align="left",
-                            p("While it sure looks like there is a much higher density of die-hard HUDS texters hailing from the Northeast and California, it's
+                            p("A higher sentiment score indicates a state's residents sent more positive messages; a larger dot corresponds to a higher message count. It bears mentioning that the more extreme sentiment-scored states tend to hail from those with fewer total messages sent (especially 
+                              West Virginia!), whereas states sending more messages tend to settle into an average score of approximately 0.25."),
+                            p("Moreover, while it sure looks like there is a much higher density of die-hard HUDS texters hailing from the Northeast and California, it's
                                important to remember that these numbers do not take into account relative abundance of each state's student population. Below is a plot
                                for the top four represented states, adjusted per capita."),
                             p("Massachusetts nonetheless looks awfully high, over double the per capita sending of California, with the next highest value. However, it bears mentioning that most international students acquire a '617' area code upon arriving at school, so they too are lumped in with 
