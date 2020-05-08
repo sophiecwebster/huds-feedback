@@ -83,11 +83,17 @@ ui <- navbarPage(theme = shinytheme("united"),
                                      br(),
                                       
                                     fluidRow(
-                                      column(5, 
+                                      column(6, 
                                              withLoader(imageOutput("percap"), type="html", loader="loader2"),
                                              ),
-                                      column(7,
-                                             p("lorem ipsum"))
+                                      column(5,
+                                             br(),
+                                             p("Annenberg (the dining hall for all 1700 first-year students) looks like it takes the cake for messages sent in 2019, but when we correct for student population, 
+                                               Lowell House takes the lead with 0.87 texts sent per capita. Interestingly, we see that houses run the gamut from this upper value to Kirkland's meager 0.05 messages per capita,
+                                               with relatively consistent intervals between each house all the way down the scale. This may be attributable to several different factors, as it's unlikely that Lowellians are simply more loquacious over text by nature, given that housing assignments are random.
+                                               Perhaps Lowell, whose dining hall just opened this year, is still sorting out some kinks and garnering a lot of messages. Meanwhile, Kirkland and Leverett, which have much lower values,
+                                               do not have the table tents that clearly advertise the Text-n-Tell program in other dining halls. Likely, students who aren't reminded that they can send feedback to HUDS are sending
+                                               fewer messages."))
                                     ),
                                         br(),
                                         sidebarLayout(
@@ -101,6 +107,8 @@ ui <- navbarPage(theme = shinytheme("united"),
                                                     c("All", sort(house_names)))
                                                     
                                                 ),
+                                            column(6,
+                                            p("As for temporal trends, there are two strong bands for lunch and dinner, but somewhat of an aching void over the summertime (where, apparently, summer school students either opt not to send messages or don't have this program in place). Toggle between houses to check out their message distribution throughout the year."))
                                             ),
                                             column(12, align="center",
                                         mainPanel(width = 12, withLoader(plotOutput("times"), type="html", loader="loader2"), br()))),
