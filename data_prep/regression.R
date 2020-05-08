@@ -103,5 +103,6 @@ full %>% ggplot(aes(x = weekday, y = ave_sentiment)) + #geom_point(alpha=0.3) +
   geom_errorbar(aes(ymin = (ymean-ysd), ymax = (ymean+ysd)))
 
 
+full %>% filter(ave_sentiment > 0) %>% nrow()
 
 
