@@ -51,8 +51,8 @@ ui <- navbarPage(theme = shinytheme("united"),
                             estimated that nearly 98% of messages are positive, while the other 2% are requests for specific dishes.
                             Students are known to send humorous feedback, and HUDS managers are known for their even wittier replies. As a huge HUDS fan, I wanted to better understand how this feedback tool is used by students through visualization and statistical analysis."),
                           h1("Data"),
-                          p("This project analyzes the almost 2500 text messages sent by students during the fall and spring semesters of 2019. This data was kindly given to me by Crista Martin, Director for Strategic Initiatives & Communications at HUDS. While,
-                            as a courtesy to her and HUDS, I will not publicize the data on this site, you can contact Crista if you have 
+                          p("This project analyzes the almost 2500 text messages sent to HUDS by students during the fall and spring semesters of 2019. Each message reports the time it was sent, its Harvard house of origin, the sender's phone number, and a unique ID string. This data was kindly given to me by Crista Martin, Director for Strategic Initiatives & Communications at HUDS. While,
+                            as a courtesy to her, HUDS, and student senders, I will not publicize the data on this site, you can contact Crista if you have 
                             any questions or curiosities."),
                           h1("About Me"),
                           p("My name is Sophie Webster, and I'm an avid texter of HUDS. I'm also a current junior at Harvard College studying 
@@ -65,7 +65,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                               href = "mailto: sophiewebster@college.harvard.edu"),
                             "or on ",
                             a("LinkedIn.",
-                              href = "https://www.linkedin.com/in/sophie-webster-651b03171/"))
+                              href = "https://www.linkedin.com/in/sophie-webster-651b03171/"), br(), "Code for this project can be found ", a("here.", href="https://github.com/sophiecwebster/huds-feedback"))
                           ),
                           
                           column(5, align="center",
@@ -118,7 +118,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                           fluidPage(
                             column(11, align="left",
                             p("While it sure looks like there is a much higher density of die-hard HUDS texters hailing from the Northeast and California, it's
-                               important to remember that these numbers do not into take account relative abundance of these states' student populations. Below is a plot
+                               important to remember that these numbers do not take into account relative abundance of each state's student population. Below is a plot
                                for the top four represented states, adjusted per capita."),
                             p("Massachusetts nonetheless looks awfully high, over double the per capita sending of California, with the next highest value. However, it bears mentioning that most international students acquire a '617' area code upon arriving at school, so they too are lumped in with 
                                Massachusetts residents. The number of international students is included in the adjusted plot at the right, which tells a much more believable story."),
@@ -188,16 +188,16 @@ server <- function(input, output) {
         list(
             src = './images/huds.png',
             contentType='image/png',
-            width = 400,
-            height = 262
+            width = 425,
+            height = 278
         )}, deleteFile = F)
     
     output$food <- renderImage({
         list(
             src = './images/food.jpg',
             contentType='image/jpg',
-            width = 400,
-            height = 262
+            width = 425,
+            height = 278
         )}, deleteFile = F)
     
     output$percap <- renderImage({
