@@ -31,7 +31,7 @@ full <- readRDS("./rds_files/full.RDS")
 per_cap <- readRDS("./rds_files/per_cap.RDS")
 table <- readRDS("./rds_files/table.RDS")
 
-marquee_list <- list(marquee("comments"))
+#marquee_list <- list(marquee("comments"))
 
 
 ui <- navbarPage(theme = shinytheme("united"),
@@ -76,6 +76,9 @@ ui <- navbarPage(theme = shinytheme("united"),
                               br(),
                               imageOutput("food", height = "100%", width = "100%"))
                               ))),
+                 
+                 ## By House Analysis ## 
+                 
                  tabPanel("By House",
                           fluidPage(
                               
@@ -115,6 +118,9 @@ ui <- navbarPage(theme = shinytheme("united"),
                                         )
                               
                           ),
+                 
+                 ## Geographic Analysis ## 
+                 
                  tabPanel("By State",
                           fluidPage(
                               titlePanel("Messages By Student Home State"),
@@ -141,7 +147,9 @@ ui <- navbarPage(theme = shinytheme("united"),
                                      plotOutput("ma_adjusted"))),
                           br()
                           
-                          ),       
+                          ),    
+                 
+                 ## Sentiment Analysis ##
                  
                  tabPanel("Sentiment Analysis",
                           fluidPage(
@@ -173,16 +181,19 @@ ui <- navbarPage(theme = shinytheme("united"),
                                        ))),
                  tabPanel("Browse Messages",
                           fluidPage(
-                              # Trying to get a marquee going; I'll figure this out later.
+                              # Tried to get a marquee going; I'll opted for a searchable table instead.
                               #mainPanel(renderCSS(type="text", loader=marquee_list)),
                               #marquee("<marquee>hello there! Hover over a word to see how many times it occurs across all messages </marquee>"),
                               h2("Text-and-Tell Word Cloud", align="left"),
                               h4("Hover over a word to see how many times it occurs across all messages!", align="left"),
                               br(),
-                              column(12, align="center",
-                              wordcloud2Output("wordPlot"), class = 'rightAlign',
+                              column(11.5, align="center",
+                              wordcloud2Output("wordPlot"), 
                               br(), br()),
-                              
+                              column(12,
+                                     p("This certainly gives us the impression that the messages are overwhelmingly positive. Following up on David Davidson's assertion of 98% positivity in ", em("Fifteen Minutes,"), "this data yields a positivity rate of 78% across all messages. However, there are far more (literal) false positives 
+                                       than false negatives with the rsentiment method, so this is likely actually a bit lower. Regardless, students do seem to be mostly complimentary in their messages. And for what it's worth, I, as a vegetarian, can't help but smile that the tofu:sausage mention ratio is over 3.")
+                                     ),
                               column(12, align="left",
                                      h2("Peruse & Search a Sample of Messages"),
                                      h4("Trust me, there are some gems in here."),
@@ -211,6 +222,8 @@ server <- function(input, output) {
             height = 278
         )}, deleteFile = F)
     
+    # GIF for house-by-house analysis
+    
     output$percap <- renderImage({
       list(
         src = './images/house.gif',
@@ -220,31 +233,7 @@ server <- function(input, output) {
       )
     }, deleteFile = F)
     
-    # output$house <- renderPlot({
-    #   ggdotchart(per_cap, 
-    #              x = "House", 
-    #              y = "Messages", 
-    #              color = "#f15b29", 
-    #              add = "segments", 
-    #              add.params = list(color = "#e95420", size = 1.5), 
-    #              dot.size = 7, 
-    #              label = round(per_cap$Messages), 
-    #              font.label = list(color = "white", size = 9, 
-    #             vjust = 0.5, ggtheme = theme_pubr())) + coord_flip() +
-    #     labs(x = "", y="Message Count")
-    # })
-    # 
-    # output$percap <- renderPlot({
-    #   ggdotchart(per_cap, 
-    #              x = "House", 
-    #              y = "cap", 
-    #              color = "#00AFBB", 
-    #              add = "segments", 
-    #              add.params = list(color = "#00AFBB", size = 1.5), 
-    #              dot.size = 8, label = round(per_cap$cap, digits = 2), font.label = list(color = "white", size = 9, 
-    #              vjust = 0.5, ggtheme = theme_pubr())) + coord_flip() +
-    #     labs(x = "", y="Messages Per Capita")
-    # })
+    # Timeline heat map
     
     output$times <- renderPlot({
         
@@ -284,13 +273,7 @@ server <- function(input, output) {
       ggplotly(map_2, tooltip = "text")
     })
     
-    # output$map <- renderImage({
-    #   list(
-    #     src = "./images/map.jpg",
-    #     contentType='image/jpg',
-    #     width = 700,
-    #     height = 457
-    #   )}, deleteFile = F)
+    # Next two plots are exploring top four states' messaging counts
     
     output$top_four <- renderPlot({
       top_four$n <- top_four$n / c(944, 708, 944, 944)
@@ -308,6 +291,8 @@ server <- function(input, output) {
         labs(x = "Home State", y = "HUDS Messages Per Capita", title = "Messages Per Capita By Student Home State", subtitle = "Adjusting for International Students") +
         theme_minimal()
     })
+    
+    # Regressions
     
     output$regs <- renderPlot({
       
@@ -368,33 +353,23 @@ server <- function(input, output) {
       }
      
     })
-
     
-    # For some reason, this plot would not render properly/threw an error every time :'(
-    # I will be sure to fix when I turn it in!
-    
-    
-    #output$map <- renderPlot({
-    #     ggplot(data = US, aes(x = long, y = lat)) + geom_polygon(fill="grey", aes(group = group)) +
-    #         coord_map() + geom_point(data = map_1, color="#f15b29", aes(x = longitude, y = latitude, size = Messages)) +
-    #         xlim(-180, -50) + theme_classic() + theme(axis.line=element_blank(),axis.text.x=element_blank(),
-    #                                                   axis.text.y=element_blank(),axis.ticks=element_blank(),
-    #                                                   axis.title.x=element_blank(),
-    #                                                   axis.title.y=element_blank(),
-    #                                                   panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-    #                                                   panel.grid.minor=element_blank(),plot.background=element_blank())
-    # })
+    # Another woe-begotten attempt at using a CSS element
     
      output$scroll <- renderCSS({
        marquee(marquee_list, behavior = "scroll", direction = "left",
               scrollamount = 6, width = "100%")
      })
+     
+     # Renderin the word cloud
     
      output$wordPlot <- renderWordcloud2({
         
         wordcloud2(word_cloud, size = 1.3, color = rep_len(c("#f15b29", "#2bb673", "#BDD2FF", "#f3b204", "#F59187"), nrow(demoFreq)))
         
     })
+     
+     # Interactive table
      
     output$table <- renderDataTable(table, server=F)
 }
