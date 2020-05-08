@@ -125,7 +125,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                                       
                           fluidPage(
                             column(11, align="left",
-                            p("A higher sentiment score indicates a state's residents sent more positive messages, and a larger dot corresponds to a higher message count. It bears mentioning that the more extreme sentiment-scored states tend to have fewer total messages sent (especially 
+                            p("Sentiment score on this map is an average of the scores of each message sent by a state's residents. A higher sentiment score indicates a state's residents sent more positive, complimentary messages, and a larger dot corresponds to a higher message count. It bears mentioning that the more extreme sentiment-scored states tend to have fewer total messages sent (especially 
                               West Virginia!), whereas states sending more messages tend to settle into an average sentiment score of approximately 0.25."),
                             p("Moreover, while it sure looks like there is a much higher density of die-hard HUDS texters hailing from the Northeast and California, it's
                                important to remember that these numbers do not take into account relative abundance of each state's student population. Below is a plot
@@ -147,9 +147,10 @@ ui <- navbarPage(theme = shinytheme("united"),
                           fluidPage(
                             titlePanel("Sentiment Analysis & Regression"),
                             p("Perhaps the most critical piece of information we can know before we make any judgments surrounding the volume of messages is the nature of their contents. 
-                             Using the `rsentiment` package, I assigned each message a sentiment score, with positive values mapping onto more positive content, whereas negative values suggest criticism."),
-                            p("Hour of day shows a weak, positive relationship with sentiment, suggesting that the attitudes of texters improve through the day or that dinner may simply be better than lunch. A similar progression 
-                             is visible from Monday to Sunday, while month shows a slightly negative relationship with message sentiment."),
+                             Using the `rsentiment` package, I assigned each message a sentiment score, with positive values mapping onto more positive content, whereas negative values suggest criticism. 
+                              This package works by assigning connotation scores to words in the text message and calculating the text's overall positivity or negativity. "),
+                            p("This regression explores how sentiment changes with time across different intervals — 24 hours, 7 days, or 12 months. The hour of day shows a weak, positive relationship with sentiment, suggesting that the attitudes of texters improve throughout the day or that dinner may simply be better than lunch. A similar progression 
+                             is visible from Monday to Sunday, perhaps implying a morale boost across the week or a preference for mid-to-late week meals. Meanwhile, month shows a slightly negative relationship with message sentiment. For both semesters documented here, engagement with HUDS over text seems to peak in the first month or two and gradually decline over the latter half of the semester."),
                             br(),
                                        fluidRow(
                                          column(3,
