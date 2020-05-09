@@ -31,7 +31,7 @@ full <- readRDS("./rds_files/full.RDS")
 per_cap <- readRDS("./rds_files/per_cap.RDS")
 table <- readRDS("./rds_files/table.RDS")
 
-#marquee_list <- list(marquee("comments"))
+marquee_list <- list(marquee("comments"))
 
 
 ui <- navbarPage(theme = shinytheme("united"),
@@ -181,7 +181,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                                        ))),
                  tabPanel("Browse Messages",
                           fluidPage(
-                              # Tried to get a marquee going; I'll opted for a searchable table instead.
+                              # Tried to get a marquee going; I opted for a searchable table instead.
                               #mainPanel(renderCSS(type="text", loader=marquee_list)),
                               #marquee("<marquee>hello there! Hover over a word to see how many times it occurs across all messages </marquee>"),
                               h2("Text-and-Tell Word Cloud", align="left"),
@@ -198,7 +198,11 @@ ui <- navbarPage(theme = shinytheme("united"),
                                      h2("Peruse & Search a Sample of Messages"),
                                      h4("Trust me, there are some gems in here."),
                                      br(),
-                                     dataTableOutput("table"), br())
+                                     dataTableOutput("table"), br()),
+                              
+                              # Adding favicon
+                              
+                              tags$head(tags$link(rel="shortcut icon", href="favicon.ico")),
                               )))
 
 
