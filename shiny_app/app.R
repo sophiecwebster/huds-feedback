@@ -31,7 +31,7 @@ full <- readRDS("./rds_files/full.RDS")
 per_cap <- readRDS("./rds_files/per_cap.RDS")
 table <- readRDS("./rds_files/table.RDS")
 
-marquee_list <- list(marquee("comments"))
+#marquee_list <- list(marquee("comments"))
 
 
 ui <- navbarPage(theme = shinytheme("united"),
@@ -86,10 +86,10 @@ ui <- navbarPage(theme = shinytheme("united"),
                                      br(),
                                       
                                     fluidRow(
-                                      column(6, 
+                                      column(5, 
                                              withLoader(imageOutput("percap"), type="html", loader="loader2"),
                                              ),
-                                      column(5,
+                                      column(6,
                                              br(),
                                              p("Annenberg (the dining hall for all 1700 first-year students) looks like it takes the cake for messages sent in 2019, but when we correct for student population, 
                                                Lowell House takes the lead with 0.87 texts sent per capita. Interestingly, we see that houses run the gamut from this upper value to Kirkland's meager 0.05 messages per capita,
@@ -154,10 +154,10 @@ ui <- navbarPage(theme = shinytheme("united"),
                  tabPanel("Sentiment Analysis",
                           fluidPage(
                             titlePanel("Sentiment Analysis & Regression"),
-                            p("Perhaps the most critical piece of information we can know before we make any judgments surrounding the volume of messages is the nature of their contents. 
+                            p("Perhaps the most critical piece of information to know before we make any judgments surrounding the volume of messages is the nature of their contents. 
                              Using the `rsentiment` package, I assigned each message a sentiment score, with positive values mapping onto more positive content, whereas negative values suggest criticism. 
                               This package works by assigning connotation scores to words in the text message and calculating the text's overall positivity or negativity. "),
-                            p("This regression explores how sentiment changes with time across different intervals — 24 hours, 7 days, or 12 months. The hour of day shows a weak, positive relationship with sentiment, suggesting that the attitudes of texters improve throughout the day or that dinner may simply be better than lunch. A similar progression 
+                            p("This regression explores how sentiment changes with time across different time intervals — 24 hours, 7 days, or 12 months. The hour of day shows a weak, positive relationship with sentiment, suggesting that the attitudes of texters improve throughout the day or that dinner may simply be better than lunch. A similar progression 
                              is visible from Monday to Sunday, perhaps implying a morale boost across the week or a preference for mid-to-late week meals. Meanwhile, month shows a slightly negative relationship with message sentiment. For both semesters documented here, engagement with HUDS over text seems to peak in the first month or two and gradually decline over the latter half of the semester."),
                             br(),
                                        fluidRow(
@@ -172,8 +172,9 @@ ui <- navbarPage(theme = shinytheme("united"),
                                                 selectInput(
                                                   inputId = "model",
                                                   label = "Regression Type",
-                                                  c("Linear", "LOESS")
-                                                )
+                                                  c("Linear", "LOESS")),
+                                                  p("Linear regressions represent trends with a straight line, whereas LOESS regressions are non-parametric, locally-weighted curves, which help us get a sense of the fluctuations across the time period. ")
+                                                
                                          ),
                                          column(9, align="left",
                                                 mainPanel(width = 40, plotOutput("regs")))
@@ -192,7 +193,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                               br(), br()),
                               column(12,
                                      p("This certainly gives us the impression that the messages are overwhelmingly positive. Following up on David Davidson's assertion of 98% positivity in ", em("Fifteen Minutes,"), "this data yields a positivity rate of 78% across all messages. However, there are far more (literal) false positives 
-                                       than false negatives with the rsentiment method, so this is likely actually a bit lower. Regardless, students do seem to be mostly complimentary in their messages. And for what it's worth, I, as a vegetarian, can't help but smile that the tofu:sausage mention ratio is over 3.")
+                                       than false negatives with the rsentiment method, so this is likely actually a bit lower. Regardless, students do seem to be mostly complimentary in their messages. And for what it's worth, I, as a vegetarian, can't help but smile that the tofu:sausage mention ratio is over 3!")
                                      ),
                               column(12, align="left",
                                      h2("Peruse & Search a Sample of Messages"),
@@ -200,7 +201,7 @@ ui <- navbarPage(theme = shinytheme("united"),
                                      br(),
                                      dataTableOutput("table"), br()),
                               
-                              # Adding favicon
+                              # Adding favicon (sadly, this didn't full work because shiny doesn't support published favicons)
                               
                               tags$head(tags$link(rel="shortcut icon", href="favicon.ico")),
                               )))
@@ -360,12 +361,12 @@ server <- function(input, output) {
     
     # Another woe-begotten attempt at using a CSS element
     
-     output$scroll <- renderCSS({
-       marquee(marquee_list, behavior = "scroll", direction = "left",
-              scrollamount = 6, width = "100%")
-     })
+     # output$scroll <- renderCSS({
+     #   marquee(marquee_list, behavior = "scroll", direction = "left",
+     #          scrollamount = 6, width = "100%")
+     # })
      
-     # Renderin the word cloud
+     # Rendering the word cloud!
     
      output$wordPlot <- renderWordcloud2({
         
