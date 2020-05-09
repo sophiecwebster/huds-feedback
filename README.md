@@ -5,8 +5,8 @@ https://sophiecwebster.shinyapps.io/huds-feedback/
 
 ## Repo Guide
 <ul>
-  <li>/data-prep: R scripts for cleaning, plots & visualizations, and regression</li>
-  <li>/shiny-app: Shiny files, including images, RDS data, and app.R</li>
-  <li>.gitignore:  nothing you need to worry about...</li>
-  <li>README.md: you are here!</li>
+  <li><strong>/data-prep:</strong> R scripts for cleaning, plots & visualizations, and regression</li>
+  <li><strong>/shiny-app:</strong> Shiny files, including images, RDS data, and app.R</li>
+  <li><strong>.gitignore:</strong>  nothing you need to worry about...</li>
+  <li><strong>README.md:</strong> you are here!</li>
 </ul>
