@@ -1,4 +1,4 @@
-# Prepare environment
+# Prepare environment / load libraries
 
 library(shiny)
 library(tidyverse)
@@ -31,6 +31,7 @@ full <- readRDS("./rds_files/full.RDS")
 per_cap <- readRDS("./rds_files/per_cap.RDS")
 table <- readRDS("./rds_files/table.RDS")
 
+# from an earlier attempt at integrating a CSS element
 #marquee_list <- list(marquee("comments"))
 
 
